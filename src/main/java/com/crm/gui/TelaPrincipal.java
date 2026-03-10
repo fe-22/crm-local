@@ -87,7 +87,8 @@ public class TelaPrincipal extends JFrame {
                 "CRM Local v1.0\nDesenvolvido em Java\n\n" +
                 "Sistema de gerenciamento de clientes para uso local.\n" +
                 "Desenvolvedora: Fthec Sistemas e Automação\n" +
-                "CNPJ: 12.345.678/0001-90", // Substitua pelo CNPJ correto
+                "CNPJ: 64.212.742/0001-63\n" +
+                "Contato: (11) 9.8217-0425\nE-mail: fernando.fernandes@fthec.com.br",
                 "Sobre", JOptionPane.INFORMATION_MESSAGE);
         });
 
