@@ -6,9 +6,15 @@ import com.crm.dao.NegociacaoDAO;
 import com.crm.model.Cliente;
 import com.crm.model.Contato;
 import com.crm.model.Negociacao;
+import com.crm.report.ExportadorCSV;
+import com.crm.report.ExportadorPDF;
+
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -40,7 +46,7 @@ public class PainelRelatorios extends JPanel {
         JButton btnPipeline = new JButton("Pipeline de Vendas");
         JButton btnClientesPeriodo = new JButton("Clientes por Período");
         JButton btnExportPDF = new JButton("Exportar para PDF");
-        JButton btnExportExcel = new JButton("Exportar para Excel");
+        JButton btnExportExcel = new JButton("Exportar para Excel (CSV)");
 
         painelBotoes.add(btnClientes);
         painelBotoes.add(btnContatos);
@@ -65,8 +71,8 @@ public class PainelRelatorios extends JPanel {
         btnContatos.addActionListener(e -> gerarRelatorioContatos());
         btnPipeline.addActionListener(e -> gerarRelatorioPipeline());
         btnClientesPeriodo.addActionListener(e -> gerarRelatorioClientesPeriodo());
-        btnExportPDF.addActionListener(e -> JOptionPane.showMessageDialog(this, "Funcionalidade em desenvolvimento"));
-        btnExportExcel.addActionListener(e -> JOptionPane.showMessageDialog(this, "Funcionalidade em desenvolvimento"));
+        btnExportPDF.addActionListener(e -> exportarPDF());
+        btnExportExcel.addActionListener(e -> exportarExcel());
     }
 
     private void gerarRelatorioClientes() {
@@ -149,7 +155,57 @@ public class PainelRelatorios extends JPanel {
     }
 
     private void gerarRelatorioClientesPeriodo() {
-        // Exemplo: todos os clientes (poderia adicionar filtro de data depois)
+        // Exemplo simples: todos os clientes (poderia adicionar filtro de data depois)
         gerarRelatorioClientes();
+    }
+
+    private void exportarPDF() {
+        if (tabela.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Nenhum dado para exportar.");
+            return;
+        }
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setSelectedFile(new File("relatorio.pdf"));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivo PDF", "pdf");
+        chooser.setFileFilter(filter);
+
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File arquivo = chooser.getSelectedFile();
+            if (!arquivo.getName().toLowerCase().endsWith(".pdf")) {
+                arquivo = new File(arquivo.getAbsolutePath() + ".pdf");
+            }
+            try {
+                ExportadorPDF.exportarTabelaParaPDF(tabela, arquivo);
+                JOptionPane.showMessageDialog(this, "PDF exportado com sucesso!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao exportar PDF: " + ex.getMessage());
+            }
+        }
+    }
+
+    private void exportarExcel() {
+        if (tabela.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Nenhum dado para exportar.");
+            return;
+        }
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setSelectedFile(new File("relatorio.csv"));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivo CSV", "csv");
+        chooser.setFileFilter(filter);
+
+        if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File arquivo = chooser.getSelectedFile();
+            if (!arquivo.getName().toLowerCase().endsWith(".csv")) {
+                arquivo = new File(arquivo.getAbsolutePath() + ".csv");
+            }
+            try {
+                ExportadorCSV.exportarTabelaParaCSV(tabela, arquivo);
+                JOptionPane.showMessageDialog(this, "Arquivo CSV exportado com sucesso!\nPode ser aberto no Excel.");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Erro ao exportar CSV: " + ex.getMessage());
+            }
+        }
     }
 }

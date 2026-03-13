@@ -13,6 +13,7 @@ public class TelaPrincipal extends JFrame {
     private JMenuBar menuBar;
     private JToolBar toolBar;
     private JPanel footerPanel;
+    private PainelDashboard painelDashboard;
 
     public TelaPrincipal() {
         setTitle("CRM Local - Sistema de Gestão de Clientes");
@@ -45,11 +46,13 @@ public class TelaPrincipal extends JFrame {
         painelContatos = new PainelContatos();
         painelNegociacoes = new PainelNegociacoes();
         painelRelatorios = new PainelRelatorios();
+        painelDashboard = new PainelDashboard();
 
         tabbedPane.addTab("Clientes", painelClientes);
         tabbedPane.addTab("Contatos", painelContatos);
         tabbedPane.addTab("Negociações", painelNegociacoes);
         tabbedPane.addTab("Relatórios", painelRelatorios);
+        tabbedPane.addTab("Dashboard", painelDashboard);
     }
 
     private void criarMenu() {

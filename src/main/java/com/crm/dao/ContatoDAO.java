@@ -72,7 +72,7 @@ public class ContatoDAO {
 
     public List<Contato> listarTodos() throws SQLException {
         List<Contato> lista = new ArrayList<>();
-        String sql = "SELECT * FROM contatos ORDER BY data_contato DESC";
+        String sql = "SELECT * FROM contatos";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
