@@ -5,31 +5,34 @@ import com.crm.database.DatabaseConnection;
 import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        // Configurar aparência do sistema
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        // Testar conexão com banco de dados
-        try {
+
+            File databaseDir = new File(System.getenv("APPDATA") + "/CRM-Local");
+            if (!databaseDir.exists()) {
+                databaseDir.mkdirs();
+            }
+
             Connection conn = DatabaseConnection.getConnection();
             System.out.println("Banco de dados conectado com sucesso!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null,
-                "Erro ao conectar ao banco de dados: " + e.getMessage(),
-                "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
+
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    TelaPrincipal tela = new TelaPrincipal();
+                    tela.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Erro ao abrir tela: " + e.getMessage());
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erro fatal: " + e.getMessage());
         }
-        
-        // Iniciar aplicação
-        SwingUtilities.invokeLater(() -> {
-            TelaPrincipal tela = new TelaPrincipal();
-            tela.setVisible(true);
-        });
     }
 }

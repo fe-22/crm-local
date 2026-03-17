@@ -4,6 +4,13 @@ import com.crm.dao.ClienteDAO;
 import com.crm.dao.ContatoDAO;
 import com.crm.dao.NegociacaoDAO;
 import com.crm.model.Negociacao;
+import com.crm.util.AlertaSistema;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -16,6 +23,7 @@ public class PainelDashboard extends JPanel {
     private ClienteDAO clienteDAO;
     private ContatoDAO contatoDAO;
     private NegociacaoDAO negociacaoDAO;
+    private AlertaSistema alertaSistema;
 
     private JLabel lblTotalClientes;
     private JLabel lblTotalContatos;
@@ -23,6 +31,9 @@ public class PainelDashboard extends JPanel {
     private JLabel lblTotalValorPipeline;
     private JTable tabelaPipeline;
     private DefaultTableModel modeloTabela;
+    private JList<String> listaAlertas;
+    private DefaultListModel<String> modeloAlertas;
+    private ChartPanel chartPanel;
 
     public PainelDashboard() throws SQLException {
         System.out.println("[DEBUG] Construtor do PainelDashboard iniciado");
@@ -30,6 +41,7 @@ public class PainelDashboard extends JPanel {
         clienteDAO = new ClienteDAO();
         contatoDAO = new ContatoDAO();
         negociacaoDAO = new NegociacaoDAO();
+        alertaSistema = new AlertaSistema();
 
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -42,10 +54,18 @@ public class PainelDashboard extends JPanel {
         painelCards.add(criarCard("Negociações", "0", new Color(155, 89, 182)));
         painelCards.add(criarCard("Valor Total (R$)", "0,00", new Color(230, 126, 34)));
 
-        // Painel central com tabela de pipeline
+        // Painel central dividido: gráfico em cima, tabela embaixo
+        JPanel painelCentral = new JPanel(new GridLayout(2, 1, 5, 5));
+
+        // Gráfico de barras
+        JPanel painelGrafico = new JPanel(new BorderLayout());
+        painelGrafico.setBorder(BorderFactory.createTitledBorder("Valor por Etapa"));
+        chartPanel = criarGraficoBarras();
+        painelGrafico.add(chartPanel, BorderLayout.CENTER);
+
+        // Tabela de pipeline
         JPanel painelTabela = new JPanel(new BorderLayout());
         painelTabela.setBorder(BorderFactory.createTitledBorder("Pipeline de Vendas por Etapa"));
-
         String[] colunas = {"Etapa", "Quantidade", "Valor Total (R$)"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
@@ -58,11 +78,27 @@ public class PainelDashboard extends JPanel {
         JScrollPane scroll = new JScrollPane(tabelaPipeline);
         painelTabela.add(scroll, BorderLayout.CENTER);
 
-        add(painelCards, BorderLayout.NORTH);
-        add(painelTabela, BorderLayout.CENTER);
+        painelCentral.add(painelGrafico);
+        painelCentral.add(painelTabela);
 
-        // Carregar dados iniciais
+        // Painel de alertas (sul)
+        JPanel painelAlertas = new JPanel(new BorderLayout());
+        painelAlertas.setBorder(BorderFactory.createTitledBorder("Alertas Próximos"));
+        modeloAlertas = new DefaultListModel<>();
+        listaAlertas = new JList<>(modeloAlertas);
+        listaAlertas.setFont(new Font("Arial", Font.PLAIN, 12));
+        JScrollPane scrollAlertas = new JScrollPane(listaAlertas);
+        scrollAlertas.setPreferredSize(new Dimension(800, 100));
+        painelAlertas.add(scrollAlertas, BorderLayout.CENTER);
+
+        // Adicionar componentes
+        add(painelCards, BorderLayout.NORTH);
+        add(painelCentral, BorderLayout.CENTER);
+        add(painelAlertas, BorderLayout.SOUTH);
+
+        // Carregar dados iniciais e alertas
         carregarDados();
+        carregarAlertas();
 
         System.out.println("[DEBUG] PainelDashboard construído com sucesso");
     }
@@ -97,6 +133,23 @@ public class PainelDashboard extends JPanel {
         return card;
     }
 
+    private ChartPanel criarGraficoBarras() {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Valor por Etapa",
+                "Etapa",
+                "Valor (R$)",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
+        );
+        ChartPanel panel = new ChartPanel(chart);
+        panel.setPreferredSize(new Dimension(600, 200));
+        return panel;
+    }
+
     private void carregarDados() {
         try {
             // Totais
@@ -122,7 +175,9 @@ public class PainelDashboard extends JPanel {
                 valorPorEtapa.put(etapa, valorPorEtapa.getOrDefault(etapa, 0.0) + n.getValor());
             }
 
+            // Atualizar tabela
             modeloTabela.setRowCount(0);
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
             for (String etapa : qtdPorEtapa.keySet()) {
                 Object[] linha = {
                     etapa,
@@ -130,9 +185,27 @@ public class PainelDashboard extends JPanel {
                     String.format("R$ %.2f", valorPorEtapa.get(etapa)).replace(".", ",")
                 };
                 modeloTabela.addRow(linha);
+                dataset.addValue(valorPorEtapa.get(etapa), "Valor", etapa);
             }
+
+            // Atualizar gráfico
+            JFreeChart chart = chartPanel.getChart();
+            chart.getCategoryPlot().setDataset(dataset);
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar dashboard: " + e.getMessage());
+        }
+    }
+
+    private void carregarAlertas() {
+        List<String> alertas = alertaSistema.gerarAlertas();
+        modeloAlertas.clear();
+        if (alertas.isEmpty()) {
+            modeloAlertas.addElement("Nenhum alerta próximo.");
+        } else {
+            for (String a : alertas) {
+                modeloAlertas.addElement(a);
+            }
         }
     }
 }

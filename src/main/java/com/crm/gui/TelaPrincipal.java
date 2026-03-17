@@ -20,6 +20,16 @@ public class TelaPrincipal extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1024, 768);
         setLocationRelativeTo(null);
+        // Carregar ícone da janela
+        try {
+    ImageIcon logoIcon = new ImageIcon(getClass().getResource("/icons/logo.png"));
+    Image scaled = logoIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+    JLabel logoLabel = new JLabel(new ImageIcon(scaled));
+    toolBar.add(logoLabel);
+    toolBar.addSeparator();
+} catch (Exception e) {
+    // ignora
+}
 
         try {
             inicializarComponentes();

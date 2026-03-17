@@ -1,4 +1,5 @@
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\PainelNegociacoes.java
+C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\report\ExportadorCSV.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\DialogoCliente.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\dao\NegociacaoDAO.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\TelaPrincipal.java
@@ -6,9 +7,11 @@ C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\model\Contato.j
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\dao\ClienteDAO.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\PainelClientes.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\Main.java
+C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\PainelDashboard.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\DialogoNegociacao.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\model\Negociacao.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\PainelRelatorios.java
+C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\report\ExportadorPDF.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\model\Cliente.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\dao\ContatoDAO.java
 C:\Users\Usuário\OneDrive\ws-crm\crm-local\src\main\java\com\crm\gui\PainelContatos.java

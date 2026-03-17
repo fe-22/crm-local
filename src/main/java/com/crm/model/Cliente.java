@@ -93,8 +93,11 @@ public class Cliente {
         this.ativo = ativo;
     }
     
-    @Override
-    public String toString() {
-        return nome;
+@Override
+public String toString() {
+    if (empresa != null && !empresa.trim().isEmpty()) {
+        return empresa + " - " + nome;
     }
+    return nome;
+}
 }

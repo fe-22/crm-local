@@ -3,6 +3,7 @@ package com.crm.gui;
 import com.crm.dao.ClienteDAO;
 import com.crm.model.Cliente;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
@@ -181,4 +182,31 @@ public class PainelClientes extends JPanel {
             modeloTabela.addRow(row);
         }
     }
+    private void configurarRenderer() {
+    tabelaClientes.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            // value é o nome (string)
+            // Precisamos do objeto Cliente para pegar a empresa
+            int modelRow = table.convertRowIndexToModel(row);
+            int id = (int) modeloTabela.getValueAt(modelRow, 0);
+            try {
+                Cliente c = clienteDAO.buscarPorId(id);
+                if (c != null) {
+                    String texto = "<html><b>" + c.getEmpresa() + "</b> - " + c.getNome() + "</html>";
+                    setText(texto);
+                } else {
+                    setText(value.toString());
+                }
+            } catch (SQLException e) {
+                setText(value.toString());
+            }
+            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+            setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+            return this;
+        }
+    });
+}
 }
